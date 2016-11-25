@@ -1,12 +1,15 @@
 /*-----------------------------------------------------------------------------
-This template demonstrates how to use an IntentDialog with a LuisRecognizer to add 
-natural language support to a bot. 
-For a complete walkthrough of creating this type of bot see the article at
-http://docs.botframework.com/builder/node/guides/understanding-natural-language/
+
+Inspired By:
++ http://docs.botframework.com/builder/node/guides/understanding-natural-language/
++ https://github.com/Microsoft/BotBuilder-Samples/tree/master/Node/demo-Search
 -----------------------------------------------------------------------------*/
 "use strict";
+var util = require('util');
+var _ = require('lodash');
 var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
+var restify = require('restify');
 
 var useEmulator = (process.env.NODE_ENV == 'development');
 
@@ -33,7 +36,10 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
 .matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
 */
 .matches('Define', (session, args) => {
-    session.send('Hi! This is the Define intent handler. You tots said: \'%s\'.', session.message.text);
+    session.send('Hello! I\'ll search my knowledge-base for the concept: \'%s\'.', session.message.text);
+    // trigger Search dialog root
+    var query = session.message.text;
+    session.beginDialog('concepts:/', { query });
 })
 .onDefault((session) => {
     session.send('Sorry, I did not understand \'%s\'.', session.message.text);
@@ -41,13 +47,37 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
 
 bot.dialog('/', intents);    
 
+// Azure Search provider
+// TODO: Store keys in env variables
+var AzureSearch = require('./SearchProviders/azure-search');
+var azureSearchClient = AzureSearch.create('futurisma', 'AB6A49BC44C7E4DD94615981EC60DB64', 'aiconcept');
+
+/// <reference path="../SearchDialogLibrary/index.d.ts" />
+var SearchDialogLibrary = require('./SearchDialogLibrary');
+
+// Jobs Listing Search
+var conceptsResultsMapper = SearchDialogLibrary.defaultResultsMapper(conceptToSearchHit);
+var concept = SearchDialogLibrary.create('concepts', {
+    search: (query) => azureSearchClient.search(query).then(conceptsResultsMapper)
+});
+
+bot.library(concept);
+
+// Maps the AzureSearch Job Document into a SearchHit that the Search Library can use
+function conceptToSearchHit(concept) {
+    return {
+        key: concept.id,
+        title: concept.title,
+        description: concept.extract
+    };
+}
+
 if (useEmulator) {
-    var restify = require('restify');
-    var server = restify.createServer();
-    server.listen(3978, function() {
+    var emulatorServer = restify.createServer();
+    emulatorServer.listen(3978, function() {
         console.log('test bot endpoint at http://localhost:3978/api/messages');
     });
-    server.post('/api/messages', connector.listen());    
+    emulatorServer.post('/api/messages', connector.listen());    
 } else {
     module.exports = { default: connector.listen() }
 }
