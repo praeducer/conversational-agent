@@ -77,6 +77,8 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     .matches('Help', builder.DialogAction.send(hiText))
     .matches('Sorry', builder.DialogAction.send('Sorry. I\'m still learning.'))
     .matches('Cool', builder.DialogAction.send('Cool'))
+    .matches('Thanks', builder.DialogAction.send('Thanks'))
+    .matches('IDontKnow', builder.DialogAction.send('I don\'t know'))
     .onDefault((session) => {
         session.send('Sorry, I did not understand \'%s\'. Type \'help\' if you need assistance.', session.message.text);
 });
