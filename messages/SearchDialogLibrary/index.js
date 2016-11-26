@@ -1,8 +1,16 @@
+/*-----------------------------------------------------------------------------
+See package.json.
+
+Inspired By:
++ http://docs.botframework.com/builder/node/guides/understanding-natural-language/
++ https://github.com/Microsoft/BotBuilder-Samples/tree/master/Node/demo-Search
+-----------------------------------------------------------------------------*/
+
 var util = require('util');
 var _ = require('lodash');
 var builder = require('botbuilder');
 
-// TODO: Make sure you add code to validate these fields
+// TODO: Make sure to add code to validate these fields
 var luisAppId = process.env.LuisAppId || process.env['LuisAppId'];
 var luisAPIKey = process.env.LuisAPIKey || process.env['LuisAPIKey'];
 var luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';

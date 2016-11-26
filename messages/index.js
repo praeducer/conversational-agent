@@ -1,9 +1,11 @@
 /*-----------------------------------------------------------------------------
+See package.json.
 
 Inspired By:
 + http://docs.botframework.com/builder/node/guides/understanding-natural-language/
 + https://github.com/Microsoft/BotBuilder-Samples/tree/master/Node/demo-Search
 -----------------------------------------------------------------------------*/
+
 "use strict";
 var util = require('util');
 var _ = require('lodash');
