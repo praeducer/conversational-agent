@@ -30,8 +30,8 @@ var luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
 
 const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
 
-var searchQuestionText = 'You can say *search* followed by the concept you\'re interested in and I\'ll start the search process.';
-var hiText = 'Hi! I\'m a really simple bot that defines A.I. concepts. ' + searchQuestionText;
+var searchQuestionText = 'You can say *search* followed by the A.I. concept you\'re interested in and I\'ll start the search process.';
+var hiText = 'Hi! I\'m a really simple bot that defines artificial intelligence concepts. ' + searchQuestionText;
 var firstHello = true;
 var jokes = [
     'Is a hippopotamus a hippopotamus? Or just a really cool opotamus?',
