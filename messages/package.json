@@ -1,6 +1,6 @@
 {
   "name": "futurisma",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "This conversational agent will help people, especially employers, understand the OMSCS Specialization in Interactive Intelligence.",
   "main": "index.js",
   "dependencies": {
@@ -17,8 +17,22 @@
       "restify": "^4.1.1"
   },  
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
-  "author": "",
-  "license": "ISC"
+  "engines": {
+    "node": "5.9.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/praeducer/conversational-agent-functions"
+  },
+  "keywords": [
+    "chat",
+    "bot",
+    "conversational"
+  ],
+  "author": "Paul Prae",
+  "contributors": [],
+  "license": ""
 }

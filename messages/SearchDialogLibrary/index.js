@@ -2,8 +2,18 @@ var util = require('util');
 var _ = require('lodash');
 var builder = require('botbuilder');
 
+// TODO: Make sure you add code to validate these fields
+var luisAppId = process.env.LuisAppId || process.env['LuisAppId'];
+var luisAPIKey = process.env.LuisAPIKey || process.env['LuisAPIKey'];
+var luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
+
+const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
+
+// Main dialog with LUIS
+var recognizer = new builder.LuisRecognizer(LuisModelUrl);
+
 const defaultSettings = {
-    pageSize: 3,
+    pageSize: 5,
     multipleSelection: false,
     refiners: [],
     refineFormatter: (arr) => _.zipObject(arr, arr)
@@ -85,7 +95,7 @@ function create(libraryId, settings) {
 
     // Handle display results & selection
     library.dialog('/results',
-        new builder.IntentDialog()
+        new builder.IntentDialog({ recognizers: [recognizer] })
             .onBegin((session, args) => {
                 // Save previous state
                 session.dialogData.selection = args.selection;
@@ -102,8 +112,10 @@ function create(libraryId, settings) {
                 session.send(reply);
 
                 session.send(settings.multipleSelection ?
-                    'You can select one or more to add to your list, *list* what you\'ve selected so far, *refine* these results, see *more* or search *again*.' :
-                    'You can select one, *refine* these results, see *more* or search *again*.');
+                    'You can select one or more to add to your list, *list* what you\'ve selected so far, see *more* or search *again*.' :
+                    'You can select one, see *more* or search *again*.');
+                    // 'You can select one or more to add to your list, *list* what you\'ve selected so far, *refine* these results, see *more* or search *again*.' :
+                    // 'You can select one, *refine* these results, see *more* or search *again*.');
 
             })
             .matches(/again|reset/i, (session) => {
@@ -123,13 +135,14 @@ function create(libraryId, settings) {
                 });
             })
             .matches(/list/i, (session) => listAddedItems(session))
-            .matches(/done/i, (session) => session.endDialogWithResult({ selection: session.dialogData.selection, done: true }))
+            .matches('Done', (session) => session.endDialogWithResult({ selection: session.dialogData.selection, done: true }))
             .onDefault((session, args) => {
                 var selectedKey = session.message.text;
                 var hit = _.find(session.dialogData.searchResponse.results, ['key', selectedKey]);
                 if (!hit) {
                     // Un-recognized selection
-                    return session.send('Not sure what you mean. You can search *again*, *refine*, *list* or select one of the items above. Or are you *done*?');
+                    return session.send('Not sure what you mean. You can search *again*, *list* or select one of the items above. Or are you *done*?');
+                    // return session.send('Not sure what you mean. You can search *again*, *refine*, *list* or select one of the items above. Or are you *done*?');
                 } else {
                     // Add selection
                     var selection = session.dialogData.selection || [];
