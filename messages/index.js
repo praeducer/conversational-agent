@@ -30,30 +30,33 @@ var luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
 
 const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
 
-var hiText = 'Hi! I\'m a really simple bot. All I can do is define some A.I. concepts for you.';
+var searchQuestionText = 'What concept should I look up for you?';
+var hiText = 'Hi! I\'m a really simple bot that defines A.I. concepts. ' + searchQuestionText;
+var firstHello = true;
 
 // Main dialog with LUIS
 var recognizer = new builder.LuisRecognizer(LuisModelUrl);
 var intents = new builder.IntentDialog({ recognizers: [recognizer] })
-/*
-.matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
-*/
-.onBegin((session) => {
-    session.send(hiText);
-})
-.matches('Hello', builder.DialogAction.send(hiText))
-.matches('Define', (session, args) => {
-    args.response = session.message.text;
-    session.beginDialog('concepts:/', args);
-})
-.matches('Compliment', builder.DialogAction.send('You\'re awesome!'))
-.matches('HowAreYou?', builder.DialogAction.send('Life is beautiful. How are you?'))
-.matches('YoureWelcome', builder.DialogAction.send('You\'re welcome.'))
-.matches('Goodbye', builder.DialogAction.send('Bye! I\'ll let you end the session when you\'re ready.'))
-.matches('Help', builder.DialogAction.send(hiText))
-.onDefault((session) => {
-    session.send('Sorry, I did not understand \'%s\'. Type \'help\' if you need assistance.', session.message.text);
-});
+    /*
+    .matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
+    */
+    .onBegin((session,args, next) => {
+        if(firstHello){
+            session.send(hiText);
+            firstHello = false;
+        } else{
+            session.send(searchQuestionText);
+        }
+    })
+    .matches('Hello', builder.DialogAction.send(hiText))
+    .matches('Compliment', builder.DialogAction.send('You\'re awesome!'))
+    .matches('HowAreYou?', builder.DialogAction.send('Life is beautiful. How are you?'))
+    .matches('YoureWelcome', builder.DialogAction.send('You\'re welcome.'))
+    .matches('Goodbye', builder.DialogAction.send('Bye! I\'ll let you end the session when you\'re ready.'))
+    .matches('Help', builder.DialogAction.send(hiText))
+    .onDefault((session) => {
+        session.beginDialog('concepts:/', { response: session.message.text});
+    });
 
 bot.dialog('/', intents);    
 
@@ -86,6 +89,7 @@ function conceptToSearchHit(concept) {
 if (useEmulator) {
     var emulatorServer = restify.createServer();
     emulatorServer.listen(3978, function() {
+        console.log('using LUIS at ' + LuisModelUrl);
         console.log('test bot endpoint at http://localhost:3978/api/messages');
     });
     emulatorServer.post('/api/messages', connector.listen());    

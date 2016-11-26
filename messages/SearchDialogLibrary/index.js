@@ -96,7 +96,7 @@ function create(libraryId, settings) {
     // Handle display results & selection
     library.dialog('/results',
         new builder.IntentDialog({ recognizers: [recognizer] })
-            .onBegin((session, args) => {
+            .onBegin((session, args, next) => {
                 // Save previous state
                 session.dialogData.selection = args.selection;
                 session.dialogData.searchResponse = args.searchResponse;
@@ -112,11 +112,10 @@ function create(libraryId, settings) {
                 session.send(reply);
 
                 session.send(settings.multipleSelection ?
-                    'You can select one or more to add to your list, *list* what you\'ve selected so far, see *more* or search *again*.' :
-                    'You can select one, see *more* or search *again*.');
+                    'You can select one or more to add to your list, *list* what you\'ve selected so far, see *more*, search *again*, or say *done*.' :
+                    'You can select one, see *more* or search *again*, or say *done*.');
                     // 'You can select one or more to add to your list, *list* what you\'ve selected so far, *refine* these results, see *more* or search *again*.' :
                     // 'You can select one, *refine* these results, see *more* or search *again*.');
-
             })
             .matches(/again|reset/i, (session) => {
                 // Restart
