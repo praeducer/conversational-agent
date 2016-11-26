@@ -30,7 +30,7 @@ var luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
 
 const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
 
-var searchQuestionText = 'What concept should I look up for you?';
+var searchQuestionText = 'You can say *search* followed by the concept you\'re interested in and I\'ll start the search process.';
 var hiText = 'Hi! I\'m a really simple bot that defines A.I. concepts. ' + searchQuestionText;
 var firstHello = true;
 var jokes = [
@@ -57,8 +57,14 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
             session.send(hiText);
             firstHello = false;
         } else{
-            session.send(searchQuestionText);
+            next();
         }
+    })
+    .matches('SearchConcept', (session) => {
+        session.beginDialog('concepts:/', { response: session.message.text.replace(/search/i,'')});
+    })
+    .matches(/search/ig, (session) => {
+        session.beginDialog('concepts:/', { response: session.message.text.replace(/search/i,'')});
     })
     .matches('Hello', builder.DialogAction.send(hiText))
     .matches('Compliment', builder.DialogAction.send('You\'re awesome!'))
@@ -69,9 +75,11 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     .matches('YoureWelcome', builder.DialogAction.send('You\'re welcome.'))
     .matches('Goodbye', builder.DialogAction.send('Bye! I\'ll let you end the session when you\'re ready.'))
     .matches('Help', builder.DialogAction.send(hiText))
+    .matches('Sorry', builder.DialogAction.send('Sorry. I\'m still learning.'))
+    .matches('Cool', builder.DialogAction.send('Cool'))
     .onDefault((session) => {
-        session.beginDialog('concepts:/', { response: session.message.text});
-    });
+        session.send('Sorry, I did not understand \'%s\'. Type \'help\' if you need assistance.', session.message.text);
+});
 
 bot.dialog('/', intents);    
 

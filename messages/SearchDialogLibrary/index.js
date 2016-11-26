@@ -77,6 +77,12 @@ function create(libraryId, settings) {
             var input = args.response;
             var hasInput = typeof (input) === 'string';
             if (hasInput) {
+                if(input.trim().toLowerCase() === 'no' || input.trim().toLowerCase() === 'done'){
+                    return session.endDialogWithResult({
+                        selection,
+                        query
+                    });
+                }
                 // Process input
                 if (settings.multipleSelection && input.trim().toLowerCase() === 'list') {
                     // E. List items
@@ -112,16 +118,14 @@ function create(libraryId, settings) {
                 session.send(reply);
 
                 session.send(settings.multipleSelection ?
-                    'You can select one or more to add to your list, *list* what you\'ve selected so far, see *more*, search *again*, or say *done*.' :
-                    'You can select one, see *more* or search *again*, or say *done*.');
-                    // 'You can select one or more to add to your list, *list* what you\'ve selected so far, *refine* these results, see *more* or search *again*.' :
-                    // 'You can select one, *refine* these results, see *more* or search *again*.');
+                    'You can select one or more to add to your list to study later, *list* what you\'ve selected so far, see *more* results, search *again*, or say *done* if you\'re done searching.' :
+                    'You can select one to study later, see *more* results, search *again*, or say *done* if you\'re done searching.');
             })
-            .matches(/again|reset/i, (session) => {
+            .matches('Again', (session) => {
                 // Restart
                 session.replaceDialog('/');
             })
-            .matches(/more/i, (session) => {
+            .matches('More', (session) => {
                 // Next Page
                 session.dialogData.query.pageNumber++;
                 performSearch(session, session.dialogData.query, session.dialogData.selection);
@@ -133,8 +137,16 @@ function create(libraryId, settings) {
                     selection: session.dialogData.selection
                 });
             })
-            .matches(/list/i, (session) => listAddedItems(session))
+            .matches('List', (session) => listAddedItems(session))
+            .matches(/\bno\b/i, (session) => session.endDialogWithResult({ selection: session.dialogData.selection, response: 'no', done: true }))
+            .matches(/\bdone\b/i, (session) => session.endDialogWithResult({ selection: session.dialogData.selection, response: 'done', done: true }))
             .matches('Done', (session) => session.endDialogWithResult({ selection: session.dialogData.selection, done: true }))
+            .matches('SearchConcept', (session) => {
+                session.replaceDialog('/', { response: session.message.text.replace(/search/i,'')});
+            })
+            .matches(/search/ig, (session) => {
+                session.replaceDialog('/', { response: session.message.text.replace(/search/i,'')});
+            })
             .onDefault((session, args) => {
                 var selectedKey = session.message.text;
                 var hit = _.find(session.dialogData.searchResponse.results, ['key', selectedKey]);
@@ -261,7 +273,7 @@ function create(libraryId, settings) {
         if (args.response === undefined) {
             session.dialogData.selection = args.selection;
             session.dialogData.query = args.query;
-            builder.Prompts.confirm(session, args.message || 'Do you want to continue searching and adding more items?');
+            builder.Prompts.confirm(session, args.message || 'Do you want to continue searching?');
         } else {
             return session.endDialogWithResult({
                 done: !args.response,
@@ -326,6 +338,11 @@ function create(libraryId, settings) {
     }
 
     function searchPrompt(session) {
+        var input = "";
+        if(session.message) input = session.message.text;
+        if(input && (input.trim().toLowerCase() === 'no' || input.trim().toLowerCase() === 'done')){
+            return session.endDialogWithResult({ selection: session.dialogData.selection, done: true });
+        }
         var prompt = 'What would you like to search for?';
         if (!!session.dialogData.firstTimeDone) {
             prompt = 'What else would you like to search for?';
