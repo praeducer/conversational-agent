@@ -33,6 +33,18 @@ const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' +
 var searchQuestionText = 'What concept should I look up for you?';
 var hiText = 'Hi! I\'m a really simple bot that defines A.I. concepts. ' + searchQuestionText;
 var firstHello = true;
+var jokes = [
+    'Is a hippopotamus a hippopotamus? Or just a really cool opotamus?',
+    'A dog is forever in the push-up position.',
+    'I\'m sick of following my dreams, I\'m going to ask them where they\'re going and hook up with them later.',
+    'Every book is a children\'s book if the kid can read.',
+    'I like escalators, because an escalator can never break; it can only become stairs.',
+    'I like rice. Rice is great if you want to eat 2,000 of something.',
+    'This is what my friend said to me, he said “I think the weather\'s trippy.” And I said “No, man. It\'s not the weather that\'s trippy. Perhaps it is the way that we perceive it that is indeed trippy.” Then I thought, “Man, I should have just said… \'Yeah.\'”',
+    'My apartment is infested with koala bars. It\'s the cutest infestation ever. Way better than cockroaches. When I turn on the light, a bunch of koala bears scatter. And I don\'t want \'em to. I\'m like, “Hey, hold on fellas. Let me hold one of you.”',
+    'Wearing a turtleneck is like being strangled by a really weak guy… all day. ',
+    'I think foosball is a combination of soccer and shish kabobs.'
+]
 
 // Main dialog with LUIS
 var recognizer = new builder.LuisRecognizer(LuisModelUrl);
@@ -51,6 +63,9 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     .matches('Hello', builder.DialogAction.send(hiText))
     .matches('Compliment', builder.DialogAction.send('You\'re awesome!'))
     .matches('HowAreYou?', builder.DialogAction.send('Life is beautiful. How are you?'))
+    .matches('Joke', (session,args, next) => {
+        session.send(getJoke());
+    })
     .matches('YoureWelcome', builder.DialogAction.send('You\'re welcome.'))
     .matches('Goodbye', builder.DialogAction.send('Bye! I\'ll let you end the session when you\'re ready.'))
     .matches('Help', builder.DialogAction.send(hiText))
@@ -84,6 +99,9 @@ function conceptToSearchHit(concept) {
         title: concept.title,
         description: concept.extract
     };
+}
+function getJoke(){
+    return jokes[Math.floor(Math.random() * jokes.length)];
 }
 
 if (useEmulator) {
