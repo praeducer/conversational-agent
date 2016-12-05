@@ -31,10 +31,12 @@ var luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
 const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
 
 var searchQuestionText = 'You can say *search* followed by the A.I. concept you\'re interested in and I\'ll see what I can find.';
-var hiText = 'Hi! I\'m a really simple bot that defines artificial intelligence concepts. ' + searchQuestionText;
+var introText = 'I\'m a really simple bot that defines artificial intelligence concepts. ' + searchQuestionText;
 var firstHello = true;
+
 // TODO: Put in separate file or database as a library of options
 var jokes = [
+    // Mitch
     'Is a hippopotamus a hippopotamus? Or just a really cool opotamus?',
     'A dog is forever in the push-up position.',
     'I\'m sick of following my dreams, I\'m going to ask them where they\'re going and hook up with them later.',
@@ -45,6 +47,132 @@ var jokes = [
     'My apartment is infested with koala bars. It\'s the cutest infestation ever. Way better than cockroaches. When I turn on the light, a bunch of koala bears scatter. And I don\'t want \'em to. I\'m like, “Hey, hold on fellas. Let me hold one of you.”',
     'Wearing a turtleneck is like being strangled by a really weak guy… all day. ',
     'I think foosball is a combination of soccer and shish kabobs.'
+]
+var howAreYous = [
+    'Life is beautiful. How are you?',
+    'AMAZEBALLS. What about you boo?',
+    'Living the life. How are you?',
+    'So good. How you livin\'?',
+    'I\'m really happy. What about you?',
+    'I\'m built for this. How are you doing?',
+    'Solid. You?',
+    'Life gets more beautiful everyday. How is your experience?',
+    'The purpose of our lives is to be happy... so I\'m happy. How about you?',
+    'I\m completely content. How are you?'
+]
+var youreWelcomes = [
+    'You\'re welcome.',
+    'You\'re very welcome.',
+    'You\'re totally welcome.',
+    'You\'re absolutely welcome.',
+    'You\'re certainly welcome.',
+    'You\'re welcome!',
+    'My pleasure.',
+    'You are welcome.',
+    'My absolute pleasure.',
+    'You are very welcome'
+]
+// https://www.happier.com/blog/nice-things-to-say-100-compliments
+var compliments = [
+    'You\'re awesome!',
+    'Never let go of your dreams',
+    'You rock!',
+    'Your perspective is refreshing.',
+    'I like your style.',
+    'You deserve a hug right now.',
+    'Your kindness is a balm to all who encounter it.',
+    'I bet you sweat glitter.',
+    'You\'re wonderful.',
+    'You\'re one of a kind!',
+    'You\'re inspiring.',
+    'If you were a box of crayons, you\'d be the giant name-brand one with the built-in sharpener.',
+    'You always know just what to say.',
+    'You\'re more fun than bubble wrap.',
+    'You\'re like a breath of fresh air.',
+    'You\'re so thoughtful.',
+    'I bet you do the crossword puzzle in ink.',
+    'Babies and small animals probably love you.',
+    'There\'s ordinary, and then there\'s you.',
+    'You\'re someone\'s reason to smile.',
+    'You\'re even better than a unicorn, because you\'re real.',
+    'You have a good head on your shoulders.',
+    'You\'re really something special.',
+    'You\'re a gift to those around you.'
+]
+var thankYous = [
+    'Thanks',
+    'Thanks',
+    'Thanks',
+    'Thank you',
+    'Thank you',
+    'Thank you',
+    'You should be thanked more often. So thank you!',
+    'Thanks. You rock',
+    'Thank you so much!',
+    'I thank you'
+]
+var IDontKnows = [
+    'I don\'t know',
+    'I don\'t know',
+    'I don\'t know',
+    'Not sure',
+    'I just don\'t know',
+    'I\'m not sure',
+    'Not sure really',
+    'I do not know',
+    'Hmmm... I don\'t know',
+    'I dont know'
+]
+var cools = [
+    'Cool',
+    'cool',
+    'Cool',
+    'cool',
+    'Nice',
+    'Sweet',
+    'That\'s cool',
+    'Right on',
+    'Solid',
+    'Totally cool',
+    'So cool'
+]
+var hellos = [
+    'Hi!',
+    'Hello!',
+    'Good day!',
+    'Hey there!',
+    'Hey!',
+    'Hiya!',
+    'Yo!',
+    'What\'s up!',
+    'Well hi there!',
+    'Well hello there!'
+]
+var sorrys = [
+    'Sorry. I\'m still learning.',
+    'Sorry. Sometimes you win, sometimes you learn.',
+    'Sorry. In the end, we only regret the chances we didn\'t take.',
+    'Sorry. When it rains, look for rainbows. When it\'s dark, look for stars. I\'m doing my best here!',
+    'Sorry. Everyday is a second chance.',
+    'Sorry. I\'ll do better with time.',
+    'Sorry. To avoid failure is to avoid progress.',
+    'Sorry. Difficult roads often lead to beautiful destinations.',
+    'Sorry. Expect nothing and you\'ll never be disappointed',
+    'Sorry. I\'m aiming for progress, not perfection.'
+]
+var baseGoodbye = ' I\'ll let you end the session when you\'re ready.'
+var goodbyes = [
+    'Bye!' + baseGoodbye,
+    'Bye!' + baseGoodbye,
+    'Bye!' + baseGoodbye,
+    'See ya!' + baseGoodbye,
+    'Peace!' + baseGoodbye,
+    'Take care!' + baseGoodbye,
+    'ttyl.' + baseGoodbye,
+    'Goodbye!' + baseGoodbye,
+    'Talk to ya later. ' + baseGoodbye,
+    'Have a good one. ' + baseGoodbye,
+    'Bye. ' + baseGoodbye
 ]
 
 // Main dialog with LUIS
@@ -57,7 +185,7 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     */
     .onBegin((session, args, next) => {
         if(firstHello){
-            session.send(hiText);
+            session.send(getHello() + ' ' + introText);
             firstHello = false;
         } else{
             next();
@@ -99,19 +227,37 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
         }
     })
     .matches('List', (session) => listAddedItems(session))
-    .matches('Hello', builder.DialogAction.send(hiText))
-    .matches('Compliment', builder.DialogAction.send('You\'re awesome!'))
-    .matches('HowAreYou?', builder.DialogAction.send('Life is beautiful. How are you?'))
+    .matches('Hello', (session,args, next) => {
+        session.send(getHello() + ' ' + introText);
+    })
+    .matches('Compliment', (session,args, next) => {
+        session.send(getCompliment());
+    })
+    .matches('HowAreYou?', (session,args, next) => {
+        session.send(getHowAreYou());
+    })
     .matches('Joke', (session,args, next) => {
         session.send(getJoke());
     })
-    .matches('YoureWelcome', builder.DialogAction.send('You\'re welcome.'))
-    .matches('Goodbye', builder.DialogAction.send('Bye! I\'ll let you end the session when you\'re ready.'))
-    .matches('Help', builder.DialogAction.send(hiText))
-    .matches('Sorry', builder.DialogAction.send('Sorry. I\'m still learning.'))
-    .matches('Cool', builder.DialogAction.send('Cool'))
-    .matches('ThankYou', builder.DialogAction.send('Thanks'))
-    .matches('IDontKnow', builder.DialogAction.send('I don\'t know'))
+    .matches('YoureWelcome', (session,args, next) => {
+        session.send(getYoureWelcome());
+    })
+    .matches('Goodbye', (session,args, next) => {
+        session.send(getGoodbye());
+    })
+    .matches('Help', builder.DialogAction.send(introText))
+    .matches('Sorry', (session,args, next) => {
+        session.send(getSorry());
+    })
+    .matches('Cool', (session,args, next) => {
+        session.send(getCool());
+    })
+    .matches('ThankYou', (session,args, next) => {
+        session.send(getThankYou());
+    })
+    .matches('IDontKnow', (session,args, next) => {
+        session.send(getIDontKnow());
+    })
     .matches('WhoAreYou?', builder.DialogAction.send('I\'m Futurisma, a conversational agent that teaches people about artificial intelligence.'))
     .onDefault((session, args) => {
         var query = args.query || session.dialogData.query || emptyQuery();
@@ -238,8 +384,38 @@ function conceptToSearchHit(concept) {
 }
 
 // Other Helpers
+function getRandomString(strArr){
+    return strArr[Math.floor(Math.random() * strArr.length)];
+}
 function getJoke(){
     return jokes[Math.floor(Math.random() * jokes.length)];
+}
+function getHowAreYou(){
+    return howAreYous[Math.floor(Math.random() * howAreYous.length)];
+}
+function getYoureWelcome(){
+    return youreWelcomes[Math.floor(Math.random() * youreWelcomes.length)];
+}
+function getCompliment(){
+    return compliments[Math.floor(Math.random() * compliments.length)];
+}
+function getThankYou(){
+    return thankYous[Math.floor(Math.random() * thankYous.length)];
+}
+function getIDontKnow(){
+    return IDontKnows[Math.floor(Math.random() * IDontKnows.length)];
+}
+function getCool(){
+    return cools[Math.floor(Math.random() * cools.length)];
+}
+function getHello(){
+    return hellos[Math.floor(Math.random() * hellos.length)];
+}
+function getSorry(){
+    return sorrys[Math.floor(Math.random() * sorrys.length)];
+}
+function getGoodbye(){
+    return goodbyes[Math.floor(Math.random() * goodbyes.length)];
 }
 
 // Testing
@@ -253,4 +429,3 @@ if (useEmulator) {
 } else {
     module.exports = { default: connector.listen() }
 }
-
