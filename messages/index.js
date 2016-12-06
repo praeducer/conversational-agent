@@ -102,27 +102,19 @@ var compliments = [
     'You\'re awesome!',
     'Never let go of your dreams',
     'You rock!',
-    'Your perspective is refreshing.',
     'I like your style.',
     'You deserve a hug right now.',
-    'Your kindness is a balm to all who encounter it.',
     'I bet you sweat glitter.',
     'You\'re wonderful.',
     'You\'re one of a kind!',
     'You\'re inspiring.',
     'If you were a box of crayons, you\'d be the giant name-brand one with the built-in sharpener.',
-    'You always know just what to say.',
     'You\'re more fun than bubble wrap.',
-    'You\'re like a breath of fresh air.',
     'You\'re so thoughtful.',
     'I bet you do the crossword puzzle in ink.',
-    'Babies and small animals probably love you.',
-    'There\'s ordinary, and then there\'s you.',
     'You\'re someone\'s reason to smile.',
     'You\'re even better than a unicorn, because you\'re real.',
-    'You have a good head on your shoulders.',
-    'You\'re really something special.',
-    'You\'re a gift to those around you.'
+    'You have a good head on your shoulders.'
 ]
 var thankYous = [
     'Thanks',
@@ -240,12 +232,15 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
         if(!session.userData.introduced){
             session.send(getHello() + ' ' + introText);
             session.userData.introduced = true;
+            session.save();
         } else{
             next();
         }
     })
     .matches('Hello', (session,args, next) => {
         session.send(getHello() + ' ' + introText);
+        session.userData.introduced = true;
+        session.save();
     })   
     // TODO: Extract concepts from search query as entities
     // TODO: Show search prompt if no concepts were provided, just search command
