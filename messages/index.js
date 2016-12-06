@@ -198,6 +198,8 @@ var helpOptions = {
     }
 };
 
+var searchSynonyms = ["search for", "search", "what is", "what's", "whats", "definition of", "define", "look up", "find me", "find"]
+
 var simpleHelpOptions = "Hello!|Search machine learning|Show more results|List saved items|Tell me a joke!";
 
 // Main dialog with LUIS
@@ -226,9 +228,9 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     .matches('SearchConcept', [
         function (session) {   
             // Remove 'search' from in front of the actual search terms
-            var searchText = session.message.text.replace(/search /i,'').trim().toLowerCase();
+            var searchText = cleanSearchText(session.message.text);
             // Handle case where someone enters in just 'search' should go to search prompt
-            if(searchText === 'search'){
+            if(searchSynonyms.includes(searchText)){
                 searchPrompt(session);
             // If anything greater than a single character is left after replacements 
             } else if(searchText && searchText.length > 1){
@@ -240,7 +242,7 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
         },
         function (session, results) {
             if(results && results.response){
-                performSearchWithText(session, results.response);
+                performSearchWithText(session, cleanSearchText(results.response));
             }
         }
     ])
@@ -331,6 +333,18 @@ var searchSettings = {
 
 function emptyQuery() {
     return { pageNumber: 1, pageSize: searchSettings.pageSize, filters: [] };
+}
+
+// TODO: Make sure not to replace things like 'search' if the user types 'find depth first search'
+function cleanSearchText(searchText){
+    searchText = searchText.trim().toLowerCase();
+    searchSynonyms.forEach(function(searchSynonym){
+        if(searchText.includes(searchSynonym)){
+            // Remove the search command so just the search terms are there
+            searchText = searchText.replace(searchSynonym + ' ', '');
+        }
+    });
+    return searchText.trim();
 }
 
 function performSearchWithText(session, searchText) {
