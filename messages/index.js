@@ -35,7 +35,7 @@ var introText = 'I\'m a really simple bot that defines artificial intelligence c
 
 // TODO: Put in separate file or database as a library of options
 var jokes = [
-    // Mitch
+    // Mitch Hedberg https://en.wikiquote.org/wiki/Mitch_Hedberg
     'Is a hippopotamus a hippopotamus? Or just a really cool opotamus?',
     'A dog is forever in the push-up position.',
     'I\'m sick of following my dreams, I\'m going to ask them where they\'re going and hook up with them later.',
@@ -45,7 +45,33 @@ var jokes = [
     'This is what my friend said to me, he said “I think the weather\'s trippy.” And I said “No, man. It\'s not the weather that\'s trippy. Perhaps it is the way that we perceive it that is indeed trippy.” Then I thought, “Man, I should have just said… \'Yeah.\'”',
     'My apartment is infested with koala bars. It\'s the cutest infestation ever. Way better than cockroaches. When I turn on the light, a bunch of koala bears scatter. And I don\'t want \'em to. I\'m like, “Hey, hold on fellas. Let me hold one of you.”',
     'Wearing a turtleneck is like being strangled by a really weak guy… all day. ',
-    'I think foosball is a combination of soccer and shish kabobs.'
+    'I think foosball is a combination of soccer and shish kabobs.',
+    // Demetri Martin https://www.brainyquote.com/quotes/authors/d/demetri_martin.html
+    'The digital camera is a great invention because it allows us to reminisce. Instantly.',
+    'I think it\'s interesting that \'cologne\' rhymes with \'alone.\'',
+    'Employee of the month is a good example of how somebody can be both a winner and a loser at the same time.',
+    'Another term for balloon is bad breath holder.',
+    'I like fruit baskets because it gives you the ability to mail someone a piece of fruit without appearing insane. Like, if someone just mailed you an apple you\'d be like, \'huh? What the hell is this?\' But if it\'s in a fruit basket you\'re like, \'this is nice!\'',
+    'A drunk driver is very dangerous. So is a drunk backseat driver if he\'s persuasive.',
+    'The worst time to have a heart attack is during a game of charades.',
+    'The bird, the bee, the running child are all the same to the sliding glass door.',
+    'I wonder what the most intelligent thing ever said was that started with the word \'dude.\' \'Dude, these are isotopes.\' \'Dude, we removed your kidney. You\'re gonna be fine.\' \'Dude, I am so stoked to win this Nobel Prize. I just wanna thank Kevin, and Turtle, and all my homies.\'',
+    'If you have a pear-shaped body, you should not wear pear-colored clothes or act juicy.',
+    'The easiest time to add insult to injury is when you\'re signing somebody\'s cast',
+    'I wanna make a puzzle that\'s 40,000 pieces and when you finish it, it says, \'go outside\'',
+    'I\'d like to play a video game where you help the people who were shot in all the other games. I\'d call it, \'Really busy hospital\'',
+    'A lifevest protects you from drowning and a bulletproof vest protects you from getting shot and a sweater vest protects you from pretty girls.',
+    'I think that when you get dressed in the morning, sometimes you\'re really making a decision about your behavior for the day. Like if you put on flip-flops, you\'re saying: "Hope I don\'t get chased today. Be nice to people in sneakers."',
+    'I feel stupid when I write the word banana. Its like, how many na\'s are on this thing? "Cause I\'m like Bana... keep going. Bananana... dang."',
+    // Steven Wright http://www.weather.net/zarg/ZarPages/stevenWright.html
+    'The early bird gets the worm, but the second mouse gets the cheese.',
+    'OK, so what\'s the speed of dark?',
+    'Support bacteria - they\'re the only culture some people have.',
+    'When everything is going your way, you\'re in the wrong lane.',
+    'If Barbie is so popular, why do you have to buy her friends?',
+    'If at first you don\'t succeed, then skydiving definitely isn\'t for you.',
+    'Change is inevitable....except from vending machines.',
+    'On the other hand, you have different fingers.'
 ]
 var howAreYous = [
     'Life is beautiful. How are you?',
@@ -198,7 +224,7 @@ var helpOptions = {
     }
 };
 
-var searchSynonyms = ["search for", "search", "what is", "what's", "whats", "definition of", "define", "look up", "find me", "find"]
+var searchSynonyms = ["search for", "search", "what is", "what's", "whats", "definition of", "define", "describe", "look up", "find me", "find", "who is", "who's", "whos", "who"]
 
 var simpleHelpOptions = "Hello!|Search machine learning|Show more results|List saved items|Tell me a joke!";
 
