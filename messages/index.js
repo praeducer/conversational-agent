@@ -32,7 +32,6 @@ const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' +
 
 var searchQuestionText = 'You can say *search* followed by the A.I. concept you\'re interested in and I\'ll see what I can find.';
 var introText = 'I\'m a really simple bot that defines artificial intelligence concepts. ' + searchQuestionText;
-var firstHello = true;
 
 // TODO: Put in separate file or database as a library of options
 var jokes = [
@@ -139,9 +138,15 @@ var cools = [
 var hellos = [
     'Hi!',
     'Hello!',
+    'Hey!',
+    'Hi!',
+    'Hello!',
+    'Hey!',
+    'Hi! :D',
+    'Hello! :D',
+    'Hey! :D',
     'Good day!',
     'Hey there!',
-    'Hey!',
     'Hiya!',
     'Yo!',
     'What\'s up!',
@@ -175,6 +180,26 @@ var goodbyes = [
     'Bye. ' + baseGoodbye
 ]
 
+var helpOptions = {
+    "Hello - You can always say things like 'Hi!' or 'Hey!' and I'll greet you back.": {
+        command: "hello"
+    },
+    "Search - You can say the word 'search' followed by some artificial intelligence concept and I'll look it up for you e.g. 'search machine learning'. This is mostly what I'm all about.": {
+        command: "search"
+    },
+    "More - You can say 'more' at any time if you'd like more results from your last search. I'll find more if they exist.": {
+        command: "more"
+    },
+    "List - If you'd like to see the concepts you've saved to study later, just tell me to 'list' them.": {
+        command: "list"
+    },
+    "Joke - I also know a few 'jokes' if you'd like to hear any ;)": {
+        command: "joke"
+    }
+};
+
+var simpleHelpOptions = "Hello!|Search machine learning|Show more results|List saved items|Tell me a joke!";
+
 // Main dialog with LUIS
 var recognizer = new builder.LuisRecognizer(LuisModelUrl);
 // TODO: Make sure none of the se dialogues don't explicitly need an endDialog call
@@ -184,13 +209,16 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     .matches('<myIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
     */
     .onBegin((session, args, next) => {
-        if(firstHello){
+        if(!session.userData.introduced){
             session.send(getHello() + ' ' + introText);
-            firstHello = false;
+            session.userData.introduced = true;
         } else{
             next();
         }
     })
+    .matches('Hello', (session,args, next) => {
+        session.send(getHello() + ' ' + introText);
+    })   
     // TODO: Extract concepts from search query as entities
     // TODO: Show search prompt if no concepts were provided, just search command
     // TODO: Handle multiple search commands like define, find, or what is
@@ -217,58 +245,58 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
         }
     ])
     .matches('More', (session) => {
-        if(session.dialogData.query){
+        if(session.userData.query){
             session.send('Let me see what else I can find...');
             // Next Page
-            session.dialogData.query.pageNumber++;
-            performSearchWithQuery(session, session.dialogData.query);
+            session.userData.query.pageNumber++;
+            performSearchWithQuery(session, session.userData.query);
         } else {
             session.send('Sorry. I don\'t remember you searching for anything so I can\'t show more results.');
         }
     })
     .matches('List', (session) => listAddedItems(session))
-    .matches('Hello', (session,args, next) => {
-        session.send(getHello() + ' ' + introText);
+    .matches('Help', (session) => {
+        builder.Prompts.choice(session, "Ok. With me, you've got to keep it simple. Here are some examples of what I can understand:", simpleHelpOptions, { maxRetries: 0 });       
+        session.endDialog();
     })
-    .matches('Compliment', (session,args, next) => {
+    .matches('Compliment', (session, args) => {
         session.send(getCompliment());
     })
-    .matches('HowAreYou?', (session,args, next) => {
+    .matches('HowAreYou?', (session, args) => {
         session.send(getHowAreYou());
     })
-    .matches('Joke', (session,args, next) => {
+    .matches('Joke', (session, args) => {
         session.send(getJoke());
     })
-    .matches('YoureWelcome', (session,args, next) => {
+    .matches('YoureWelcome', (session, args) => {
         session.send(getYoureWelcome());
     })
-    .matches('Goodbye', (session,args, next) => {
+    .matches('Goodbye', (session, args) => {
         session.send(getGoodbye());
     })
-    .matches('Help', builder.DialogAction.send(introText))
-    .matches('Sorry', (session,args, next) => {
+    .matches('Sorry', (session, args) => {
         session.send(getSorry());
     })
-    .matches('Cool', (session,args, next) => {
+    .matches('Cool', (session, args) => {
         session.send(getCool());
     })
-    .matches('ThankYou', (session,args, next) => {
+    .matches('ThankYou', (session, args) => {
         session.send(getThankYou());
     })
-    .matches('IDontKnow', (session,args, next) => {
+    .matches('IDontKnow', (session, args) => {
         session.send(getIDontKnow());
     })
     .matches('WhoAreYou?', builder.DialogAction.send('I\'m Futurisma, a conversational agent that teaches people about artificial intelligence.'))
     .onDefault((session, args) => {
-        var query = args.query || session.dialogData.query || emptyQuery();
-        var selection = args.selection || session.dialogData.selection || [];
-        session.dialogData.selection = selection;
-        session.dialogData.query = query;
+        var query = args.query || session.userData.query || emptyQuery();
+        var selection = args.selection || session.userData.selection || [];
+        session.userData.selection = selection;
+        session.userData.query = query;
 
         var selectedKey = session.message.text;
         var hit = null;
-        if(session.dialogData.searchResponse){
-            hit = _.find(session.dialogData.searchResponse.results, ['key', selectedKey]);
+        if(session.userData.searchResponse){
+            hit = _.find(session.userData.searchResponse.results, ['key', selectedKey]);
         }
         if (!hit) {
             // Un-recognized selection
@@ -277,7 +305,7 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
             // Add selection
             if (!_.find(selection, ['key', hit.key])) {
                 selection.push(hit);
-                session.dialogData.selection = selection;
+                session.userData.selection = selection;
                 // TODO: Test that this persists no matter what dialogues are called.
                 session.save();
             }
@@ -307,7 +335,7 @@ function emptyQuery() {
 
 function performSearchWithText(session, searchText) {
     var query = Object.assign({}, emptyQuery(), { searchText: searchText.trim() });
-    session.dialogData.query = query;
+    session.userData.query = query;
     session.save();
     performSearchWithQuery(session, query);
 }   
@@ -319,8 +347,8 @@ function performSearchWithQuery(session, query) {
             session.send('Sorry, I didn\'t find any matches.');
         } else {
             // Save state
-            session.dialogData.searchResponse = response;
-            session.dialogData.query = query;
+            session.userData.searchResponse = response;
+            session.userData.query = query;
             session.save();
 
             // Display results
@@ -341,7 +369,7 @@ function searchPrompt(session) {
 }
 
 function listAddedItems(session) {
-    var selection = session.dialogData.selection || [];
+    var selection = session.userData.selection || [];
     if (selection.length === 0) {
         session.send('You have not added anything yet.');
     } else {
