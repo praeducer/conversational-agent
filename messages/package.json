@@ -1,6 +1,6 @@
 {
   "name": "futurisma",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "This conversational agent will help people, especially employers, understand the OMSCS Specialization in Interactive Intelligence.",
   "main": "index.js",
   "dependencies": {
