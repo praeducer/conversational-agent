@@ -145,13 +145,14 @@ var cools = [
     'cool',
     'Cool',
     'cool',
-    'Nice',
-    'Sweet',
-    'That\'s cool',
+    'Cool',
+    'cool',
+    'Cool',
+    'cool',
     'Right on',
-    'Solid',
-    'Totally cool',
-    'So cool'
+    'right on',
+    'OK',
+    'ok'
 ]
 var hellos = [
     'Hi!',
@@ -216,7 +217,7 @@ var helpOptions = {
     }
 };
 
-var searchSynonyms = ["search for", "search", "what is", "what's", "whats", "definition of", "define", "describe", "look up", "find me", "find", "who is", "who's", "whos", "who"]
+var searchSynonyms = ["search for", "search", "what is", "what's", "whats", "definition of", "define", "describe", "look up", "look for", "find me", "find", "who is", "who's", "whos", "who"]
 
 var simpleHelpOptions = "Hello!|Search machine learning|Show more results|List saved items|Tell me a joke!";
 
