@@ -51,7 +51,7 @@ var jokes = [
     'I think it\'s interesting that \'cologne\' rhymes with \'alone.\'',
     'Employee of the month is a good example of how somebody can be both a winner and a loser at the same time.',
     'Another term for balloon is bad breath holder.',
-    'I like fruit baskets because it gives you the ability to mail someone a piece of fruit without appearing insane. Like, if someone just mailed you an apple you\'d be like, \'huh? What the hell is this?\' But if it\'s in a fruit basket you\'re like, \'this is nice!\'',
+    'I like fruit baskets because it gives you the ability to mail someone a piece of fruit without appearing insane. Like, if someone just mailed you an apple you\'d be like, \'huh? What the heck is this?\' But if it\'s in a fruit basket you\'re like, \'this is nice!\'',
     'A drunk driver is very dangerous. So is a drunk backseat driver if he\'s persuasive.',
     'The worst time to have a heart attack is during a game of charades.',
     'The bird, the bee, the running child are all the same to the sliding glass door.',
@@ -179,7 +179,7 @@ var sorrys = [
     'Sorry. Everyday is a second chance.',
     'Sorry. I\'ll do better with time.',
     'Sorry. To avoid failure is to avoid progress.',
-    'Sorry. Difficult roads often lead to beautiful destinations.',
+    'Sorry. Difficult roads often lead to beautiful destinations though.',
     'Sorry. Expect nothing and you\'ll never be disappointed',
     'Sorry. I\'m aiming for progress, not perfection.'
 ]
