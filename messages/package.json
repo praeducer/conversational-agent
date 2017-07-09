@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "bluebird": "^3.4.6",
-    "botbuilder": "^3.8.4",
+    "botbuilder": "^3.4.2",
     "botbuilder-azure": "0.0.1",
     "lodash": "^4.15.0",
     "lorem-ipsum": "^1.0.3",
