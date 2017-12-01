@@ -36,7 +36,7 @@ var introText = 'I\'m a really simple bot that defines artificial intelligence c
 // TODO: Put in separate file or database as a library of options
 var jokes = [
     // Mitch Hedberg https://en.wikiquote.org/wiki/Mitch_Hedberg
-    'Is a hippopotamus a hippopotamus? Or just a really cool opotamus?',
+    //'Is a hippopotamus a hippopotamus? Or just a really cool opotamus?',
     'A dog is forever in the push-up position.',
     'I\'m sick of following my dreams, I\'m going to ask them where they\'re going and hook up with them later.',
     'Every book is a children\'s book if the kid can read.',
@@ -65,10 +65,10 @@ var jokes = [
     'I feel stupid when I write the word banana. Its like, how many na\'s are on this thing? "Cause I\'m like Bana... keep going. Bananana... dang."',
     // Steven Wright http://www.weather.net/zarg/ZarPages/stevenWright.html
     'The early bird gets the worm, but the second mouse gets the cheese.',
-    'OK, so what\'s the speed of dark?',
+    //'OK, so what\'s the speed of dark?',
     'Support bacteria - they\'re the only culture some people have.',
     'When everything is going your way, you\'re in the wrong lane.',
-    'If Barbie is so popular, why do you have to buy her friends?',
+    //'If Barbie is so popular, why do you have to buy her friends?',
     'If at first you don\'t succeed, then skydiving definitely isn\'t for you.',
     'Change is inevitable....except from vending machines.',
     'On the other hand, you have different fingers.'
@@ -310,7 +310,7 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     .matches('IDontKnow', (session, args) => {
         session.send(getIDontKnow());
     })
-    .matches('WhoAreYou?', builder.DialogAction.send('I\'m Futurisma, a conversational agent that teaches people about artificial intelligence.'))
+    .matches('WhoAreYou?', builder.DialogAction.send('I\'m Neona, a conversational agent that teaches people about artificial intelligence.'))
     .onDefault((session, args) => {
         var query = args.query || session.userData.query || emptyQuery();
         var selection = args.selection || session.userData.selection || [];
@@ -448,6 +448,7 @@ function conceptToSearchHit(concept) {
 }
 
 // Other Helpers
+// TODO: Abstract these
 function getRandomString(strArr){
     return strArr[Math.floor(Math.random() * strArr.length)];
 }
